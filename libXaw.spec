@@ -1,13 +1,10 @@
-%define with_compat 0
-
 Summary: X Athena Widget Set
 Name: libXaw
-Version: 1.0.6
-Release: 4.1%{?dist}
+Version: 1.0.11
+Release: 2%{?dist}
 License: MIT
 URL: http://www.x.org
 Group: System Environment/Libraries
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0: ftp://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
 
@@ -15,18 +12,10 @@ BuildRequires: pkgconfig(xproto) pkgconfig(x11) pkgconfig(xt)
 BuildRequires: pkgconfig(xmu) pkgconfig(xpm) pkgconfig(xext)
 # Required by the configury.
 BuildRequires: ed
+BuildRequires: xorg-x11-util-macros xmlto lynx
 
 %description
 Xaw is a widget set based on the X Toolkit Intrinsics (Xt) Library.
-
-%if %{with_compat}
-%package compat
-Summary: X.Org X11 libXaw version 6 compatibility
-Group: System Environment/Libraries
-
-%description compat
-X.Org X11 libXaw version 6 compatibility
-%endif
 
 %package devel
 Summary: Development files for %{name}
@@ -43,10 +32,10 @@ X.Org X11 libXaw development package
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Os"
-%configure --disable-xaw8 --disable-static \
-%if !%{with_compat}
-	   --disable-xaw6
-%endif
+%configure \
+	    --docdir=%{_docdir}/%{name}-%{version}-%{release} \
+	    --disable-xaw8 --disable-static \
+	    --disable-xaw6
 make %{?_smp_mflags}
 
 %install
@@ -68,16 +57,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libXaw7.so.7
 %{_libdir}/libXaw7.so.7.0.0
 
-%if %{with_compat}
-%files compat
-%defattr(-,root,root,-)
-%{_libdir}/libXaw.so.6
-%{_libdir}/libXaw6.so
-%{_libdir}/libXaw6.so.6
-%{_libdir}/libXaw6.so.6.0.1
-%{_libdir}/pkgconfig/xaw6.pc
-%endif
-
 %files devel
 %defattr(-,root,root,-)
 %dir %{_includedir}/X11/Xaw
@@ -89,10 +68,39 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libXaw7.so
 %{_libdir}/pkgconfig/xaw7.pc
 %{_mandir}/man3/*.3*
+%dir %{_docdir}/%{name}-%{version}-%{release}
+%{_docdir}/%{name}-%{version}-%{release}/*.xml
+#{_docdir}/%{name}-%{version}-%{release}/%{name}.html
+#{_docdir}/%{name}-%{version}-%{release}/%{name}.txt
 
 %changelog
-* Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.0.6-4.1
-- Rebuilt for RHEL 6
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.11-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Mon Jun 04 2012 Adam Jackson <ajax@redhat.com> 1.0.11-1
+- libXaw 1.0.11
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.9-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.9-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Jan 13 2011 Adam Jackson <ajax@redhat.com> 1.0.9-1
+- libXaw 1.0.9
+- Remove with_compat, always disable xaw6.
+
+* Mon Dec 06 2010 Adam Jackson <ajax@redhat.com> 1.0.8-2
+- Add BR: lynx so xmlto can generate text doc, fixes FTBFS.
+
+* Thu Oct 28 2010 Adam Jackson <ajax@redhat.com>
+- Drop BuildRoot
+
+* Tue Oct 26 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.0.8-1
+- libXaw 1.0.8
+
+* Mon Oct 19 2009 Adam Jackson <ajax@redhat.com> 1.0.7-1
+- libXaw 1.0.7
 
 * Thu Aug 13 2009 Parag <paragn@fedoraproject.org> 1.0.6-4
 - Merge-review cleanups #226064
