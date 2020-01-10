@@ -2,15 +2,13 @@
 
 Summary: X Athena Widget Set
 Name: libXaw
-Version: 1.0.12
-Release: 5%{?dist}
+Version: 1.0.13
+Release: 4%{?dist}
 License: MIT
 URL: http://www.x.org
 Group: System Environment/Libraries
 
 Source0: ftp://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
-
-Patch0: libXaw-1.0.12-format-security.patch
 
 BuildRequires: autoconf automake libtool
 BuildRequires: pkgconfig(xproto) pkgconfig(x11) pkgconfig(xt)
@@ -33,15 +31,14 @@ X.Org X11 libXaw development package
 %prep
 %setup -q
 
-%patch0 -p1
-
 %build
 autoreconf -v --install --force
 export CFLAGS="$RPM_OPT_FLAGS -Os"
 %configure \
 	    --docdir=%{_pkgdocdir} \
 	    --disable-xaw8 --disable-static \
-	    --disable-xaw6
+	    --disable-xaw6 \
+	    --without-fop --without-xmlto
 make %{?_smp_mflags}
 
 %install
@@ -82,6 +79,18 @@ rm -rf $RPM_BUILD_ROOT
 #{_pkgdocdir}/%{name}.txt
 
 %changelog
+* Fri Mar 25 2016 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.0.13-4
+- Force disable documentation generation
+
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.13-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.13-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Fri May 01 2015 Adam Jackson <ajax@redhat.com> 1.0.13-1
+- libXaw 1.0.13
+
 * Fri Apr 10 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.0.12-5
 - Re-add missing changelog dropped in 1.0.12-4
 
