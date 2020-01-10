@@ -1,7 +1,7 @@
 Summary: X Athena Widget Set
 Name: libXaw
 Version: 1.0.11
-Release: 5%{?dist}
+Release: 6.1%{?dist}
 License: MIT
 URL: http://www.x.org
 Group: System Environment/Libraries
@@ -74,6 +74,12 @@ rm -rf $RPM_BUILD_ROOT
 #{_docdir}/%{name}-%{version}-%{release}/%{name}.txt
 
 %changelog
+* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.0.11-6.1
+- Mass rebuild
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.0.11-6
+- Mass rebuild 2013-12-27
+
 * Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.0.11-5
 - Drop ed from BR, see upstream 0b6058db1ce
 
