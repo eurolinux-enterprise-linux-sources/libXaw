@@ -1,12 +1,16 @@
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+
 Summary: X Athena Widget Set
 Name: libXaw
-Version: 1.0.11
-Release: 6.1%{?dist}
+Version: 1.0.12
+Release: 5%{?dist}
 License: MIT
 URL: http://www.x.org
 Group: System Environment/Libraries
 
 Source0: ftp://ftp.x.org/pub/individual/lib/%{name}-%{version}.tar.bz2
+
+Patch0: libXaw-1.0.12-format-security.patch
 
 BuildRequires: autoconf automake libtool
 BuildRequires: pkgconfig(xproto) pkgconfig(x11) pkgconfig(xt)
@@ -29,11 +33,13 @@ X.Org X11 libXaw development package
 %prep
 %setup -q
 
+%patch0 -p1
+
 %build
 autoreconf -v --install --force
 export CFLAGS="$RPM_OPT_FLAGS -Os"
 %configure \
-	    --docdir=%{_docdir}/%{name}-%{version}-%{release} \
+	    --docdir=%{_pkgdocdir} \
 	    --disable-xaw8 --disable-static \
 	    --disable-xaw6
 make %{?_smp_mflags}
@@ -42,6 +48,7 @@ make %{?_smp_mflags}
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
+install -pm 644 COPYING README ChangeLog $RPM_BUILD_ROOT%{_pkgdocdir}
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 
 %clean
@@ -52,7 +59,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING README ChangeLog
+%dir %{_pkgdocdir}
+%{_pkgdocdir}/ChangeLog
+%{_pkgdocdir}/COPYING
+%{_pkgdocdir}/README
 %{_libdir}/libXaw.so.7
 %{_libdir}/libXaw7.so.7
 %{_libdir}/libXaw7.so.7.0.0
@@ -60,7 +70,6 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root,-)
 %dir %{_includedir}/X11/Xaw
-%doc COPYING
 %{_includedir}/X11/Xaw/*.h
 # FIXME:  Is this C file really supposed to be here?
 %{_includedir}/X11/Xaw/Template.c
@@ -68,17 +77,33 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libXaw7.so
 %{_libdir}/pkgconfig/xaw7.pc
 %{_mandir}/man3/*.3*
-%dir %{_docdir}/%{name}-%{version}-%{release}
-%{_docdir}/%{name}-%{version}-%{release}/*.xml
-#{_docdir}/%{name}-%{version}-%{release}/%{name}.html
-#{_docdir}/%{name}-%{version}-%{release}/%{name}.txt
+%{_pkgdocdir}/*.xml
+#{_pkgdocdir}/%{name}.html
+#{_pkgdocdir}/%{name}.txt
 
 %changelog
-* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.0.11-6.1
-- Mass rebuild
+* Fri Apr 10 2015 Benjamin Tissoires <benjamin.tissoires@redhat.com> 1.0.12-5
+- Re-add missing changelog dropped in 1.0.12-4
 
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.0.11-6
-- Mass rebuild 2013-12-27
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.12-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.12-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Wed Apr 16 2014 Jaromir Capik <jcapik@redhat.com> - 1.0.12-2
+- Fixing format-security flaws (#1037174)
+
+* Wed Feb 12 2014 Adam Jackson <ajax@redhat.com> 1.0.12-1
+- libXaw 1.0.12
+- Drop pre-F18 changelog
+
+* Sat Nov  9 2013 Ville Skyttä <ville.skytta@iki.fi> - 1.0.11-7
+- Install docs to %%{_pkgdocdir} where available (#993836).
+- Fix bogus date in %%changelog.
+
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.11-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
 * Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.0.11-5
 - Drop ed from BR, see upstream 0b6058db1ce
@@ -232,7 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 - Add missing documentation files to doc macro
 - Fix all "BuildRequires:" deps with s/xorg-x11-//g
 
-* Wed Aug 25 2005 Mike A. Harris <mharris@redhat.com> 0.99.0-4
+* Thu Aug 25 2005 Mike A. Harris <mharris@redhat.com> 0.99.0-4
 - Added dependency on xorg-x11-libXmu-devel to devel subpackage, as libXaw
   headers include libXmu headers directly which caused xkbutils to fail to
   build.
